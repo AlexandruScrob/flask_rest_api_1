@@ -38,7 +38,7 @@ class Item(Resource):
         item = ItemModel(name, data['price'])
 
         try:
-            item.insert()
+            item.save_to_db()
         except Exception as ex:
             return {"message": f"An error occurred while "
                                f"inserting the item: {ex}"}, 500
@@ -46,42 +46,26 @@ class Item(Resource):
         return item.json(), 201
 
     def delete(self, name):
-        if not ItemModel.find_by_name(name):
-            return {"message": f"An item with name "
-                               f"'{name}' doesn't exist"}, 404
+        item = ItemModel.find_by_name(name)
 
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
-        query = "DELETE FROM items WHERE name=?"
+        if item:
+            item.delete_from_db()
 
-        cursor.execute(query, (name, ))
-
-        connection.commit()
-        connection.close()
-
-        return {'message': 'item deleted'}
+        return {'message': 'Item deleted'}
 
     def put(self, name):
         data = Item.parser.parse_args()
-
         item = ItemModel.find_by_name(name)
-        updated_item = ItemModel(name, data['price'])
 
         if item is None:
-            try:
-                updated_item.insert()
-            except Exception as ex:
-                return {"message": f"An error occurred while "
-                                   f"inserting the item: {ex}"}, 500
+            item = ItemModel(name, data['price'])
 
         else:
-            try:
-                updated_item.update()
-            except Exception as ex:
-                return {"message": f"An error occurred while "
-                                   f"updating the item: {ex}"}, 500
+            item.price = data['price']
 
-        return updated_item.json()
+        item.save_to_db()
+
+        return item.json()
 
 
 class ItemList(Resource):
