@@ -6,6 +6,7 @@ from flask_jwt import JWT
 
 from section6.db import db
 from section6.resources.item import Item, ItemList
+from section6.resources.store import Store, StoreList
 from security import authenticate, identity
 from section6.resources.user import UserRegister
 
@@ -15,6 +16,13 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'alex'
 api = Api(app)
+
+
+# TODO creates tables that it sees (from imports)
+@app.before_first_request
+def create_tables():
+    db.create_all()
+
 
 app.config['JWT_AUTH_URL_RULE'] = '/login'
 
@@ -43,8 +51,10 @@ def customized_error_handler(error):
     }), error.status_code
 
 
+api.add_resource(Store, '/store/<string:name>')
 api.add_resource(Item, '/item/<string:name>')
 api.add_resource(ItemList, '/items')
+api.add_resource(StoreList, '/stores')
 api.add_resource(UserRegister, '/register')
 
 
