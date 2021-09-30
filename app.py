@@ -4,11 +4,11 @@ from flask import Flask, jsonify
 from flask_restful import Api
 from flask_jwt import JWT
 
-from section6.db import db
-from section6.resources.item import Item, ItemList
-from section6.resources.store import Store, StoreList
+from db import db
+from resources.item import Item, ItemList
+from resources.store import Store, StoreList
 from security import authenticate, identity
-from section6.resources.user import UserRegister
+from resources.user import UserRegister
 
 
 app = Flask(__name__)

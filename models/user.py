@@ -1,6 +1,6 @@
 # model = internal representation of an entity
 
-from section6.db import db
+from db import db
 
 
 class UserModel(db.Model):
