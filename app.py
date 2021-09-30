@@ -19,12 +19,6 @@ app.secret_key = 'alex'
 api = Api(app)
 
 
-# TODO creates tables that it sees (from imports)
-@app.before_first_request
-def create_tables():
-    db.create_all()
-
-
 app.config['JWT_AUTH_URL_RULE'] = '/login'
 
 # config JWT to expire within half an hour
