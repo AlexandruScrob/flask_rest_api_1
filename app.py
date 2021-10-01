@@ -9,8 +9,7 @@ from db import db
 from resources.item import Item, ItemList
 from resources.store import Store, StoreList
 from security import authenticate, identity
-from resources.user import UserRegister
-
+from resources.user import UserRegister, User
 
 app = Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS'] = True
@@ -34,6 +33,12 @@ app.config['JWT_EXPIRATION_DELTA'] = timedelta(seconds=1800)
 jwt = JWT(app, authenticate, identity)  # /auth
 
 
+# NOTE: Remove this function when deploying on Heroku
+@app.before_first_request
+def create_tables():
+    db.create_all()
+
+
 @jwt.auth_response_handler
 def customized_response_handler(access_token, _identity):
     return jsonify({
@@ -52,6 +57,7 @@ def customized_error_handler(error):
 
 api.add_resource(Store, '/store/<string:name>')
 api.add_resource(Item, '/item/<string:name>')
+api.add_resource(User, '/user/<int:user_id>')
 api.add_resource(ItemList, '/items')
 api.add_resource(StoreList, '/stores')
 api.add_resource(UserRegister, '/register')
