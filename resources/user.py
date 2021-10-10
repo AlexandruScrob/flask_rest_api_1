@@ -10,28 +10,39 @@ from models.user import UserModel
 
 PARSER = reqparse.RequestParser()
 
+
+FILED_REQUIRED = "{} required"
+USER_NAME_ALREADY_EXISTS = "User with that username already exists"
+USER_CREATED = 'User created successfully.'
+USER_NOT_FOUND = 'User not found'
+USER_DELETED = 'User deleted'
+INVALID_CREDENTIALS = "Invalid credentials"
+USER_LOGOUT = 'Successfully logged out'
+
+
 # TODO all other args not defined in parser are erased
 PARSER.add_argument('username',
                     type=str,
                     required=True,
-                    help='Username required')
+                    help=FILED_REQUIRED.format('Username'))
 PARSER.add_argument('password',
                     type=str,
                     required=True,
-                    help='Password required')
+                    help=FILED_REQUIRED.format('Password'))
 
 
 class UserRegister(Resource):
-    def post(self):
+    @classmethod
+    def post(cls):
         data = PARSER.parse_args()
 
         if UserModel.find_by_username(data['username']):
-            return {'message': "User with that username already exists"}, 400
+            return {'message': USER_NAME_ALREADY_EXISTS}, 400
 
         user = UserModel(**data)
         user.save_to_db()
 
-        return {'message': 'User created successfully.'}, 200
+        return {'message': USER_CREATED}, 200
 
 
 class User(Resource):
@@ -40,7 +51,7 @@ class User(Resource):
         user = UserModel.find_by_id(user_id)
 
         if not user:
-            return {'message': 'User not found'}, 404
+            return {'message': USER_NOT_FOUND}, 404
 
         return user.json()
 
@@ -49,10 +60,10 @@ class User(Resource):
         user = UserModel.find_by_id(user_id)
 
         if not user:
-            return {'message': 'User not found'}, 404
+            return {'message': USER_NOT_FOUND}, 404
 
         user.delete_from_db()
-        return {'message': 'User deleted'}
+        return {'message': USER_DELETED}
 
 
 class UserLogin(Resource):
@@ -74,21 +85,23 @@ class UserLogin(Resource):
                        'refresh_token': refresh_token
                    }, 200
 
-        return {'message': "Invalid credentials"}, 401
+        return {'message': INVALID_CREDENTIALS}, 401
 
 
 class UserLogout(Resource):
+    @classmethod
     @jwt_required()
-    def post(self):
+    def post(cls):
         # jti is 'JWT ID', a unique identifier for a JWT
         jti = get_jwt()['jti']
         BLACKLIST.add(jti)
-        return {'message': 'Successfully logged out'}, 200
+        return {'message': USER_LOGOUT}, 200
 
 
 class TokenRefresh(Resource):
+    @classmethod
     @jwt_required(refresh=True)
-    def post(self):
+    def post(cls):
         current_user = get_jwt_identity()
         new_token = create_access_token(identity=current_user, fresh=False)
 
