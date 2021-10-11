@@ -1,8 +1,10 @@
-from flask_restful import Resource, reqparse
+from flask_restful import Resource
 from flask_jwt_extended import jwt_required
+from marshmallow import ValidationError
 
+from flask import request
 from models.item import ItemModel
-
+from schemas.item import ItemSchema
 
 BLANK_ERROR = "'{}' cannot be left blank."
 ITEM_NOT_FOUND = 'Item not found.'
@@ -11,27 +13,18 @@ ITEM_DELETED = 'Item deleted'
 ITEM_EX_MESSAGE = "An error occurred while inserting the item: {}"
 
 
+item_schema = ItemSchema()
+item_list_schema = ItemSchema(many=True)
+
+
 class Item(Resource):
-    parser = reqparse.RequestParser()
-
-    # TODO all other args not defined in parser are erased
-    parser.add_argument('price',
-                        type=float,
-                        required=True,
-                        help=BLANK_ERROR.format("price"))
-
-    parser.add_argument('store_id',
-                        type=int,
-                        required=True,
-                        help=BLANK_ERROR.format("store_id"))
-
     @classmethod
     # @jwt_required()
     def get(cls, name: str):
         item = ItemModel.find_by_name(name)
 
         if item:
-            return item.json()
+            return item_schema.dump(item)
 
         return {'message': ITEM_NOT_FOUND}, 404
 
@@ -45,16 +38,20 @@ class Item(Resource):
         #  silent=True -> doesn't give an error
         # data = request.get_json()
 
-        data = Item.parser.parse_args()
+        item_json = request.get_json()  # price, store_id
+        item_json['name'] = name
 
-        item = ItemModel(name, data['price'], data['store_id'])
+        try:
+            item = item_schema.load(item_json)
+        except ValidationError as err:
+            return err.messages, 400
 
         try:
             item.save_to_db()
         except Exception as ex:
             return {"message": ITEM_EX_MESSAGE.format(ex)}, 500
 
-        return item.json(), 201
+        return item_schema.dump(item), 201
 
     @classmethod
     @jwt_required()
@@ -72,19 +69,26 @@ class Item(Resource):
 
     @classmethod
     def put(cls, name: str):
-        data = Item.parser.parse_args()
+        item_json = request.get_json()
+
         item = ItemModel.find_by_name(name)
 
         if item is None:
-            item = ItemModel(name, **data)
+            item_json = request.get_json()  # price, store_id
+            item_json['name'] = name
+
+            try:
+                item = item_schema.load(item_json)
+            except ValidationError as err:
+                return err.messages, 400
 
         else:
-            item.price = data['price']
-            item.store_id = data['store_id']
+            item.price = item_json['price']
+            item.store_id = item_json['store_id']
 
         item.save_to_db()
 
-        return item.json()
+        return item_schema.dump(item), 201
 
 
 class ItemList(Resource):
@@ -92,7 +96,7 @@ class ItemList(Resource):
     # @jwt_required(optional=True)
     def get(cls):
         # user_id = get_jwt_identity()
-        items = list(map(lambda x: x.json(), ItemModel.find_all()))
+        items = item_list_schema.dump(ItemModel.find_all())
 
         # if user_id:
         return {'items': items}, 200

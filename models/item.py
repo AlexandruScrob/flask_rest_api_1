@@ -1,10 +1,10 @@
-from typing import Dict, List, Union
+from typing import List
 
 from db import db
 
 
 # TODO type hinting for dict -> key: str, values: union
-ItemJSON = Dict[str, Union[int, str, float]]
+# ItemJSON = Dict[str, Union[int, str, float]]
 
 
 class ItemModel(db.Model):
@@ -15,19 +15,6 @@ class ItemModel(db.Model):
     price = db.Column(db.Float(precision=2))
 
     store_id = db.Column(db.Integer, db.ForeignKey('stores.id'))
-
-    def __init__(self, name: str, price: float, store_id: int):
-        self.name = name
-        self.price = price
-        self.store_id = store_id
-
-    def json(self) -> ItemJSON:
-        return {
-            'id': self.id,
-            'name': self.name,
-            'price': self.price,
-            'store_id': self.store_id
-        }
 
     # TODO the recommended way to return self type
     #  (evaluate the type after the file was imported

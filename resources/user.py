@@ -1,14 +1,16 @@
 # resource = external representation of an entity
 import hmac
 
+from flask import request
 from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 jwt_required, get_jwt_identity, get_jwt)
-from flask_restful import Resource, reqparse
+from flask_restful import Resource
 
 from blacklist import BLACKLIST
-from models.user import UserModel
 
-PARSER = reqparse.RequestParser()
+from marshmallow import ValidationError
+from models.user import UserModel
+from schemas.user import UserSchema
 
 
 FILED_REQUIRED = "{} required"
@@ -20,26 +22,21 @@ INVALID_CREDENTIALS = "Invalid credentials"
 USER_LOGOUT = 'Successfully logged out'
 
 
-# TODO all other args not defined in parser are erased
-PARSER.add_argument('username',
-                    type=str,
-                    required=True,
-                    help=FILED_REQUIRED.format('Username'))
-PARSER.add_argument('password',
-                    type=str,
-                    required=True,
-                    help=FILED_REQUIRED.format('Password'))
+user_schema = UserSchema()
 
 
 class UserRegister(Resource):
     @classmethod
     def post(cls):
-        data = PARSER.parse_args()
+        try:
+            # already created a user model inside python
+            user = user_schema.load(request.get_json())
+        except ValidationError as err:
+            return err.messages, 400
 
-        if UserModel.find_by_username(data['username']):
+        if UserModel.find_by_username(user.username):
             return {'message': USER_NAME_ALREADY_EXISTS}, 400
 
-        user = UserModel(**data)
         user.save_to_db()
 
         return {'message': USER_CREATED}, 200
@@ -53,7 +50,7 @@ class User(Resource):
         if not user:
             return {'message': USER_NOT_FOUND}, 404
 
-        return user.json()
+        return user_schema.dump(user), 200
 
     @classmethod
     def delete(cls, user_id: int):
@@ -69,14 +66,17 @@ class User(Resource):
 class UserLogin(Resource):
     @classmethod
     def post(cls):
-        # get data from parser
-        data = PARSER.parse_args()
+        try:
+            user_json = request.get_json()
+            user_data = user_schema.load(user_json)
+        except ValidationError as err:
+            return err.messages, 400
 
         # find user in database
-        user = UserModel.find_by_username(data['username'])
+        user = UserModel.find_by_username(user_data.username)
 
         # check password
-        if user and hmac.compare_digest(user.password, data['password']):
+        if user and hmac.compare_digest(user.password, user_data.password):
             access_token = create_access_token(identity=user.id, fresh=True)
             refresh_token = create_refresh_token(user.id)
 
