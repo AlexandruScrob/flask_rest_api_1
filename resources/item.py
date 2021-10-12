@@ -77,10 +77,7 @@ class Item(Resource):
             item_json = request.get_json()  # price, store_id
             item_json['name'] = name
 
-            try:
-                item = item_schema.load(item_json)
-            except ValidationError as err:
-                return err.messages, 400
+            item = item_schema.load(item_json)
 
         else:
             item.price = item_json['price']

@@ -4,6 +4,7 @@ from datetime import timedelta
 from flask import Flask, jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
+from marshmallow import ValidationError
 
 from blacklist import BLACKLIST
 
@@ -41,6 +42,11 @@ jwt = JWTManager(app)  # /auth
 @app.before_first_request
 def create_tables():
     db.create_all()
+
+
+@app.errorhandler(ValidationError)
+def handle_marshmallow_validation(err):
+    return jsonify(err.messages), 400
 
 
 @jwt.additional_claims_loader
