@@ -1,16 +1,11 @@
 # model = internal representation of an entity
 from flask import request, url_for
-from requests import Response, post
+from requests import Response
 
 from db import db
-
+from libs.mailgun import Mailgun
 
 # UserJSON = Dict[str, Union[int, str]]
-
-MAILGUN_DOMAIN = "sandbox5f3364c574ac4c2aab7bf74b271e31db.mailgun.org"
-MAILGUN_API_KEY = "31bcb17d53a98302058479048258bf07-2ac825a1-4c86950b"
-FROM_TITLE = "Stores REST API"
-FROM_EMAIL = ""
 
 
 class UserModel(db.Model):
@@ -47,14 +42,10 @@ class UserModel(db.Model):
         link = request.url_root[:-1] +\
                url_for("userconfirm", user_id=self.id)
 
-        return post(
-            f"http:api.mailgun.net/v3/{MAILGUN_DOMAIN}/messages",
-            auth={"api", MAILGUN_API_KEY},
-            data={
-                "from": f"{FROM_TITLE} <{FROM_EMAIL}>",
-                "to": self.email,
-                "subject": "Registration confirmation",
-                "text": f"Please click the link to confirm your"
-                        f" registration: {link}",
-            },
-        )
+        subject = "Registration confirmation"
+        text = f"Please click the link to confirm your registration: {link}"
+        html = f'<html>Please click the link to confirm your registration:" \
+               f"<a href="{link}">{link}</a></html>'
+
+        return Mailgun.send_email(self.email, subject, text, html)
+

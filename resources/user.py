@@ -10,6 +10,8 @@ from flask_restful import Resource
 from blacklist import BLACKLIST
 
 from marshmallow import ValidationError
+
+from libs.mailgun import MailgunException
 from models.user import UserModel
 from schemas.user import UserSchema
 
@@ -49,6 +51,11 @@ class UserRegister(Resource):
             user.save_to_db()
             user.send_confirmation_email()
             return {"message": CREATED_SUCCESSFULLY}, 201
+
+        except MailgunException as ex:
+            user.delete_from_db()
+            return {"message": "Failed to register user: " + str(ex)}, 500
+
         except Exception as ex:
             traceback.print_exc()
             return {"message": FAILED_TO_CREATE + ": " + str(ex)}, 500

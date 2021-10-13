@@ -20,8 +20,8 @@ app = Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
 # try to get the heroku postgressql db or get the local one
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_VALID_URL',
-                                                       'sqlite:///data.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = \
+    os.environ.get('DB_VALID_URL') or os.environ.get('DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_AUTH_URL_RULE'] = '/login'
 
@@ -31,7 +31,7 @@ app.config['JWT_EXPIRATION_DELTA'] = timedelta(seconds=1800)
 # config JWT auth key name to be 'email instead of default 'username
 # app.config['JWT_AUTH_USERNAME_KEY'] = 'email'
 
-app.secret_key = 'alex'
+app.secret_key = os.environ.get('APP_SECRET_KEY')
 api = Api(app)
 
 

@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 test_key_1
 test_key_1.pub
+.env
