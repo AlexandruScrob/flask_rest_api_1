@@ -7,3 +7,4 @@ flask-jwt-extended
 marshmallow
 flask-marshmallow
 marshmallow-sqlalchemy
+requests
