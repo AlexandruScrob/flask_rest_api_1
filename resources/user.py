@@ -113,7 +113,7 @@ class UserLogin(Resource):
                            'access_token': access_token,
                            'refresh_token': refresh_token
                        }, 200
-            return {"message": USER_NOT_CONFIRMED.format(user)}, 400
+            return {"message": USER_NOT_CONFIRMED.format(user.email)}, 400
 
         return {'message': INVALID_CREDENTIALS}, 401
 

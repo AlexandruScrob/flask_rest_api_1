@@ -18,7 +18,8 @@ class UserModel(db.Model):
     email = db.Column(db.String(80), nullable=False, unique=True)
 
     confirmation = db.relationship(
-        "ConfirmationModel", lazy="dynamic", cascaded="all, delete-orphan"
+        "ConfirmationModel", lazy="dynamic", cascade="all, delete-orphan",
+        overlaps="user"
     )
 
     @property
@@ -49,7 +50,7 @@ class UserModel(db.Model):
     def send_confirmation_email(self) -> Response:
         # http://127.0.0.1:5000 + /user_confirm/1
         link = request.url_root[:-1] + url_for(
-            "confirmation", confirmation_id=self.most_recent_confirmation
+            "confirmation", confirmation_id=self.most_recent_confirmation.id
         )
 
         subject = "Registration confirmation"
