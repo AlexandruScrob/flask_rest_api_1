@@ -3,14 +3,10 @@ from flask_jwt_extended import jwt_required
 from marshmallow import ValidationError
 
 from flask import request
+
+from libs.strings import get_text
 from models.item import ItemModel
 from schemas.item import ItemSchema
-
-BLANK_ERROR = "'{}' cannot be left blank."
-ITEM_NOT_FOUND = 'Item not found.'
-ITEM_NAME_ALREADY_EXISTS = "An item with name '{}' already exists."
-ITEM_DELETED = 'Item deleted'
-ITEM_EX_MESSAGE = "An error occurred while inserting the item: {}"
 
 
 item_schema = ItemSchema()
@@ -26,13 +22,14 @@ class Item(Resource):
         if item:
             return item_schema.dump(item)
 
-        return {'message': ITEM_NOT_FOUND}, 404
+        return {'message': get_text("item_not_found")}, 404
 
     @classmethod
     @jwt_required(refresh=True)
     def post(cls, name: str):
         if ItemModel.find_by_name(name):
-            return {"message": ITEM_NAME_ALREADY_EXISTS.format(name)}, 400
+            return {"message": get_text(
+                "item_name_exists").format(name)}, 400
 
         # TODO force=true you don't need the content type header
         #  silent=True -> doesn't give an error
@@ -49,7 +46,8 @@ class Item(Resource):
         try:
             item.save_to_db()
         except Exception as ex:
-            return {"message": ITEM_EX_MESSAGE.format(ex)}, 500
+            return {"message": get_text(
+                "item_error_inserting").format(ex)}, 500
 
         return item_schema.dump(item), 201
 
@@ -65,7 +63,7 @@ class Item(Resource):
         if item:
             item.delete_from_db()
 
-        return {'message': ITEM_DELETED}
+        return {'message': get_text("item_deleted")}
 
     @classmethod
     def put(cls, name: str):
