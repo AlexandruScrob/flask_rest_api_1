@@ -6,8 +6,8 @@
   "confirmation_not_found": "Confirmation reference not found",
   "confirmation_link_expired": "The link has expired",
   "confirmation_already_confirmed": "Registration has already been confirmed",
-  "confirmation_resend_fail": "Email confirmation successfully re-sent",
-  "confirmation_resend_successful": "Internal server error. Failed to resend confirmation email",
+  "confirmation_resend_fail": "Internal server error. Failed to resend confirmation email",
+  "confirmation_resend_successful": "Email confirmation successfully re-sent",
 
   "item_name_exists": "An item with name '{}' already exists.",
   "item_error_inserting": "An error occurred while inserting the item: {}",
