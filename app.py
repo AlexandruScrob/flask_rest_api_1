@@ -1,5 +1,4 @@
-import os
-from datetime import timedelta
+from dotenv import load_dotenv
 
 from flask import Flask, jsonify
 from flask_restful import Api
@@ -18,21 +17,25 @@ from resources.confirmation import Confirmation, ConfirmationByUser
 
 
 app = Flask(__name__)
-app.config['PROPAGATE_EXCEPTIONS'] = True
-
+# app.config['PROPAGATE_EXCEPTIONS'] = True
+#
 # try to get the heroku postgressql db or get the local one
-app.config['SQLALCHEMY_DATABASE_URI'] = \
-    os.environ.get('DB_VALID_URL') or os.environ.get('DATABASE_URI')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_AUTH_URL_RULE'] = '/login'
+# app.config['SQLALCHEMY_DATABASE_URI'] = \
+#     os.environ.get('DB_VALID_URL') or os.environ.get('DATABASE_URI')
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# app.config['JWT_AUTH_URL_RULE'] = '/login'
+#
+# # config JWT to expire within half an hour
+# app.config['JWT_EXPIRATION_DELTA'] = timedelta(seconds=1800)
+#
+# # config JWT auth key name to be 'email instead of default 'username
+# # app.config['JWT_AUTH_USERNAME_KEY'] = 'email'
+#
+# app.secret_key = os.environ.get('APP_SECRET_KEY')
 
-# config JWT to expire within half an hour
-app.config['JWT_EXPIRATION_DELTA'] = timedelta(seconds=1800)
-
-# config JWT auth key name to be 'email instead of default 'username
-# app.config['JWT_AUTH_USERNAME_KEY'] = 'email'
-
-app.secret_key = os.environ.get('APP_SECRET_KEY')
+load_dotenv(".env", verbose=True)
+app.config.from_object("default_config")
+app.config.from_envvar("APPLICATION_SETTINGS")
 api = Api(app)
 
 
