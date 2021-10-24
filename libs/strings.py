@@ -9,7 +9,7 @@ and run 'libs.strings.refresh()'
 import json
 
 
-default_locale = 'en-gb'
+default_locale = "en-gb"
 cached_strings = {}
 
 

@@ -5,3 +5,4 @@ __pycache__/
 test_key_1
 test_key_1.pub
 .env
+static/images
