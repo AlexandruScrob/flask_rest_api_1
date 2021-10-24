@@ -1,7 +1,11 @@
+import traceback
+import os
+
 from flask_restful import Resource
 from flask_uploads import UploadNotAllowed
-from flask import request
+from flask import request, send_file
 from flask_jwt_extended import jwt_required, get_jwt_identity
+
 
 from libs import image_helper
 from libs.strings import get_text
@@ -34,3 +38,55 @@ class ImageUpload(Resource):
             extension = image_helper.get_extension(data["image"])
             return {"message": get_text("image_illegal_extension").format(
                 extension)}, 400
+
+
+class Image(Resource):
+    @jwt_required()
+    def get(self, filename: str):
+        """
+        Returns the requested image if it exists.
+        Looks up inside the logged in user's folder.
+        :param filename:
+        :return:
+        """
+        user_id = get_jwt_identity()
+        folder = f"user_{user_id}"
+
+        if not image_helper.is_filename_safe(filename):
+            return {"message": get_text(
+                "image_illegal_filename").format(filename)}, 400
+
+        try:
+            return send_file(image_helper.get_path(filename, folder=folder))
+
+        except FileNotFoundError:
+            return {"message": get_text(
+                "image_not_found").format(filename)}, 404
+
+    @jwt_required()
+    def delete(self, filename: str):
+        """
+
+        :param filename:
+        :return:
+        """
+        user_id = get_jwt_identity()
+        folder = f"user_{user_id}"
+
+        if not image_helper.is_filename_safe(filename):
+            return {"message": get_text(
+                "image_illegal_filename").format(filename)}, 400
+
+        try:
+            os.remove(image_helper.get_path(filename, folder=folder))
+            return {"message": get_text(
+                "image_deleted").format(filename)}, 200
+
+        except FileNotFoundError:
+            return {"message": get_text(
+                "image_not_found").format(filename)}, 404
+
+        except Exception as ex:
+            traceback.print_exc()
+            return {"message": get_text(
+                "image_delete_failed").format(str(ex))}, 500
