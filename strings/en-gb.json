@@ -35,5 +35,8 @@
   "image_illegal_filename": "Illegal filename '{}' requested.",
   "image_not_found": "Image '{}' not found.",
   "image_deleted": "Image '{}' deleted.",
-  "image_delete_failed": "Image delete failed: {}"
+  "image_delete_failed": "Image delete failed: {}",
+  "avatar_delete_failed": "Avatar delete failed: {}",
+  "avatar_uploaded": "Avatar '{}' uploaded.",
+  "avatar_not_found": "Avatar '{}' not found."
 }
