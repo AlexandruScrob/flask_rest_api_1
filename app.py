@@ -43,6 +43,8 @@ app.config.from_envvar("APPLICATION_SETTINGS")
 app.secret_key = app.config['APP_SECRET_KEY']
 patch_request_class(app, 10 * 1024 * 1024)  # 10MB max size upload
 configure_uploads(app, IMAGE_SET)
+
+db.init_app(app)
 api = Api(app)
 
 jwt = JWTManager(app)  # /auth
@@ -132,6 +134,5 @@ api.add_resource(AvatarUpload, "/upload/avatar")
 api.add_resource(Avatar, "/avatar/<int:user_id>")
 
 if __name__ == '__main__':
-    db.init_app(app)
     ma.init_app(app)
     app.run(port=5000)

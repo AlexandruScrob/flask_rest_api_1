@@ -12,3 +12,5 @@ requests~=2.26.0
 Flask-Uploads
 python-dotenv~=0.19.1
 Werkzeug==2
+SQLAlchemy
+alembic~=1.7.4
