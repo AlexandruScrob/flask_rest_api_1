@@ -2,10 +2,11 @@ Flask~=2.0.1
 Flask-RESTful
 Flask-SQLAlchemy
 uwsgi
-psycopg2
+psycopg2-binary
 flask-jwt-extended
 marshmallow~=3.13.0
 flask-marshmallow
+flask-migrate
 marshmallow-sqlalchemy
 requests~=2.26.0
 Flask-Uploads

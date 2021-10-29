@@ -4,6 +4,8 @@ from flask import Flask, jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from flask_uploads import configure_uploads, patch_request_class
+from flask_migrate import Migrate
+
 from marshmallow import ValidationError
 
 from blacklist import BLACKLIST
@@ -43,8 +45,8 @@ patch_request_class(app, 10 * 1024 * 1024)  # 10MB max size upload
 configure_uploads(app, IMAGE_SET)
 api = Api(app)
 
-
 jwt = JWTManager(app)  # /auth
+migrate = Migrate(app, db)  # should be after load_dotenv and other db configs
 
 
 # NOTE: Remove this function when deploying on Heroku
