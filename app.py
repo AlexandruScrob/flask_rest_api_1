@@ -10,14 +10,22 @@ from marshmallow import ValidationError
 
 from blacklist import BLACKLIST
 
+
+load_dotenv(".env", verbose=True)
+
+
 from ma import ma
 from db import db
+from oa import oauth
+
 from resources.item import Item, ItemList
 from resources.store import Store, StoreList
 from resources.user import (UserRegister, User, UserLogin, TokenRefresh,
                             UserLogout)
 from resources.confirmation import Confirmation, ConfirmationByUser
 from resources.image import ImageUpload, Image, AvatarUpload, Avatar
+from resources.github_login import GithubLogin
+
 from libs.image_helper import IMAGE_SET
 
 
@@ -37,7 +45,6 @@ app = Flask(__name__)
 # # app.config['JWT_AUTH_USERNAME_KEY'] = 'email'
 #
 
-load_dotenv(".env", verbose=True)
 app.config.from_object("default_config")
 app.config.from_envvar("APPLICATION_SETTINGS")
 app.secret_key = app.config['APP_SECRET_KEY']
@@ -132,7 +139,10 @@ api.add_resource(ImageUpload, "/upload/image")
 api.add_resource(Image, "/image/<string:filename>")
 api.add_resource(AvatarUpload, "/upload/avatar")
 api.add_resource(Avatar, "/avatar/<int:user_id>")
+api.add_resource(GithubLogin, "/login/github")
+
 
 if __name__ == '__main__':
     ma.init_app(app)
+    oauth.init_app(app)
     app.run(port=5000)
