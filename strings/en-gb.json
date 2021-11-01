@@ -38,5 +38,7 @@
   "image_delete_failed": "Image delete failed: {}",
   "avatar_delete_failed": "Avatar delete failed: {}",
   "avatar_uploaded": "Avatar '{}' uploaded.",
-  "avatar_not_found": "Avatar '{}' not found."
+  "avatar_not_found": "Avatar '{}' not found.",
+
+  "user_password_updated": "User password updated successfully."
 }

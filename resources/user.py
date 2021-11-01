@@ -90,7 +90,8 @@ class UserLogin(Resource):
         user = UserModel.find_by_username(user_data.username)
 
         # check password
-        if user and hmac.compare_digest(user.password, user_data.password):
+        if (user and user.password and
+                hmac.compare_digest(user.password, user_data.password)):
             confirmation = user.most_recent_confirmation
 
             if confirmation and confirmation.confirmed:

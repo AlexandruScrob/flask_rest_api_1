@@ -1,18 +1,24 @@
 import os
 
-from flask_oauthlib.client import OAuth
-
+from authlib.integrations.flask_client import OAuth
 
 oauth = OAuth()
 
-github = oauth.remote_app(
-    'github',
-    consumer_key=os.getenv("GITHUB_CONSUMER_KEY"),
-    consumer_secret=os.getenv("GITHUB_CONSUMER_SECRET"),
-    request_token_params={"scope": "user:email"},
-    base_url="https://api.github.com/",
-    request_token_url=None,
-    access_token_method="POST",
-    access_token_url="https://github.com/login/oauth/access_token",
-    authorize_url="https://github.com/login/oauth/authorize"
-)
+
+def github():
+    oauth.register(
+        name='github',
+        client_id=os.getenv("GITHUB_CONSUMER_KEY"),
+        client_secret=os.getenv("GITHUB_CONSUMER_SECRET"),
+        api_base_url="https://api.github.com/",
+        access_token_params=None,
+        authorize_params=None,
+        access_token_url="https://github.com/login/oauth/access_token",
+        authorize_url="https://github.com/login/oauth/authorize",
+        client_kwargs={
+            "scope": "user:email",
+            "token_endpoint_auth_method": "client_secret_basic",
+        },
+    )
+
+    return oauth.create_client('github')

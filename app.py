@@ -24,7 +24,7 @@ from resources.user import (UserRegister, User, UserLogin, TokenRefresh,
                             UserLogout)
 from resources.confirmation import Confirmation, ConfirmationByUser
 from resources.image import ImageUpload, Image, AvatarUpload, Avatar
-from resources.github_login import GithubLogin
+from resources.github_login import GithubLogin, GithubAuthorize, SetPassword
 
 from libs.image_helper import IMAGE_SET
 
@@ -52,6 +52,7 @@ patch_request_class(app, 10 * 1024 * 1024)  # 10MB max size upload
 configure_uploads(app, IMAGE_SET)
 
 db.init_app(app)
+oauth.init_app(app)
 api = Api(app)
 
 jwt = JWTManager(app)  # /auth
@@ -140,9 +141,11 @@ api.add_resource(Image, "/image/<string:filename>")
 api.add_resource(AvatarUpload, "/upload/avatar")
 api.add_resource(Avatar, "/avatar/<int:user_id>")
 api.add_resource(GithubLogin, "/login/github")
+api.add_resource(GithubAuthorize, "/login/github/authorized",
+                 endpoint="github.authorize")
+api.add_resource(SetPassword, "/user/password")
 
 
 if __name__ == '__main__':
     ma.init_app(app)
-    oauth.init_app(app)
     app.run(port=5000)
