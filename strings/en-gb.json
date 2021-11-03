@@ -28,6 +28,7 @@
   "user_not_confirmed": "User not confirmed, for email <{}>",
   "user_error_creating": "Internal server error",
   "user_registered": "Account created successfully!",
+  "user_password_updated": "User password updated successfully.",
 
   "image_uploaded": "Image '{}' uploaded.",
   "image_illegal_extension": "Extension '{}' is not allowed.",
@@ -40,5 +41,5 @@
   "avatar_uploaded": "Avatar '{}' uploaded.",
   "avatar_not_found": "Avatar '{}' not found.",
 
-  "user_password_updated": "User password updated successfully."
+  "order_item_by_id_not_found": "An item <id={}> in this order cannot be found."
 }

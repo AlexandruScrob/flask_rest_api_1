@@ -25,6 +25,7 @@ from resources.user import (UserRegister, User, UserLogin, TokenRefresh,
 from resources.confirmation import Confirmation, ConfirmationByUser
 from resources.image import ImageUpload, Image, AvatarUpload, Avatar
 from resources.github_login import GithubLogin, GithubAuthorize, SetPassword
+from resources.order import Order
 
 from libs.image_helper import IMAGE_SET
 
@@ -144,6 +145,7 @@ api.add_resource(GithubLogin, "/login/github")
 api.add_resource(GithubAuthorize, "/login/github/authorized",
                  endpoint="github.authorize")
 api.add_resource(SetPassword, "/user/password")
+api.add_resource(Order, "/order")
 
 
 if __name__ == '__main__':
