@@ -18,7 +18,7 @@ class ItemModel(db.Model):
                          nullable=False)
 
     # TODO the recommended way to return self type
-    #  (evaluate the type after the file was imported
+    #  (evaluate the type after the file was imported)
     @classmethod
     def find_by_name(cls, name: str) -> "ItemModel":
         # SELECT * FROM items WHERE name=name

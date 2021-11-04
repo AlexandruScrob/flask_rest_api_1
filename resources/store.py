@@ -32,7 +32,7 @@ class Store(Resource):
             return {'message': get_text(
                 "store_error_inserting").format(ex)}, 500
 
-        return store_schema.drump(store), 201
+        return store_schema.dump(store), 201
 
     @classmethod
     def delete(cls, name: str):
