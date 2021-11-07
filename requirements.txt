@@ -16,3 +16,4 @@ Werkzeug
 SQLAlchemy
 alembic
 Authlib
+stripe
